@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Tapped uses your approximate location once to find your ZIP code and look up water records for it. Only the ZIP code is sent to our servers, never your location.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Lets debug builds talk to the local dev API (http://localhost:8787). -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+</dict>
+</plist>
