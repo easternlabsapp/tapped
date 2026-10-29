@@ -1,0 +1,20 @@
+# Dependencies and build output
+node_modules/
+.wrangler/
+build/
+DerivedData/
+
+# Local configuration and secrets
+.dev.vars
+.env
+.env.*
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/
+*.log
