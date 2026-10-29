@@ -17,7 +17,7 @@ Items required or strongly advised before submitting Tapped for public distribut
 
 - [ ] App icon and launch presentation.
 - [x] Credits screen with the required attributions (WaterViolations.org / EPA, GeoNames CC BY 4.0): About screen, info button on the main screen.
-- [ ] Link the hosted privacy policy URL from the About screen.
+- [x] Hosted privacy policy URL linked from the About screen (https://easternlabs.app/tapped/privacy, published from the landing-page repository).
 - [ ] In-app statement of the data's nature and end date (present in each result) and the disclaimer (present).
 - [ ] Accessibility pass: Dynamic Type at the largest sizes, VoiceOver, Reduce Motion, small-screen devices.
 - [ ] Verification of all states on device: permission denied, location unavailable, non-US location, offline, API error.
