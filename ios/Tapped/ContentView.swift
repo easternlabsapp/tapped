@@ -35,7 +35,7 @@ struct ContentView: View {
 
                         if compact {
                             Panel(phase: model.phase, placeName: model.placeName)
-                                .padding(.top, 8)
+                                .padding(.top, 28)
                                 .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
 
@@ -49,6 +49,8 @@ struct ContentView: View {
                     .padding(.horizontal, 20)
                     .padding(.bottom, 16)
                     .frame(minHeight: geo.size.height)
+                    .contentShape(Rectangle())
+                    .onTapGesture { zipFocused = false }
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
@@ -108,12 +110,6 @@ private struct ZipField: View {
                 .foregroundStyle(.white)
                 .padding(.leading, 18)
                 .accessibilityLabel("ZIP code")
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
-                        Button("Done") { focused.wrappedValue = false }
-                    }
-                }
             Button(action: submit) {
                 Image(systemName: "arrow.right.circle.fill").font(.system(size: 32))
                     .foregroundStyle(disabled ? Theme.secondaryText : Theme.aqua)
