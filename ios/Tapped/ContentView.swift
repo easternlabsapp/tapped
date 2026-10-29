@@ -5,6 +5,7 @@ struct ContentView: View {
     @State private var model = LookupViewModel(
         locator: CoreLocationZipLocator(), service: APIStatusService(), places: GeocoderPlaceResolver())
     @FocusState private var zipFocused: Bool
+    @State private var showingAbout = false
 
     var body: some View {
         ZStack {
@@ -52,6 +53,17 @@ struct ContentView: View {
                 .scrollDismissesKeyboard(.interactively)
             }
         }
+        .overlay(alignment: .topTrailing) {
+            Button { showingAbout = true } label: {
+                Image(systemName: "info.circle")
+                    .font(.system(size: 22, weight: .regular))
+                    .foregroundStyle(Theme.secondaryText)
+                    .frame(width: 44, height: 44)
+            }
+            .padding(.trailing, 8)
+            .accessibilityLabel("About and data sources")
+        }
+        .sheet(isPresented: $showingAbout) { AboutView() }
         .preferredColorScheme(.dark)
         .animation(.spring(duration: 0.6, bounce: 0.2), value: compact)
         .onChange(of: model.phase) { _, phase in

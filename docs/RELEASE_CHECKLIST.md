@@ -16,7 +16,8 @@ Items required or strongly advised before submitting Tapped for public distribut
 ## Application
 
 - [ ] App icon and launch presentation.
-- [ ] Credits screen with the required attributions (WaterViolations.org / EPA, GeoNames CC BY 4.0). Text is in [NOTICE.md](../NOTICE.md).
+- [x] Credits screen with the required attributions (WaterViolations.org / EPA, GeoNames CC BY 4.0): About screen, info button on the main screen.
+- [ ] Link the hosted privacy policy URL from the About screen.
 - [ ] In-app statement of the data's nature and end date (present in each result) and the disclaimer (present).
 - [ ] Accessibility pass: Dynamic Type at the largest sizes, VoiceOver, Reduce Motion, small-screen devices.
 - [ ] Verification of all states on device: permission denied, location unavailable, non-US location, offline, API error.
@@ -25,8 +26,8 @@ Items required or strongly advised before submitting Tapped for public distribut
 ## App Store Connect
 
 - [ ] Unique app name confirmed available (the working name is "Tapped").
-- [ ] **Privacy policy URL** (required). The policy should state that the app uses approximate location on the device to derive a ZIP code, sends only the ZIP code to the project API, collects no account data, and uses no third-party analytics.
-- [ ] App Privacy ("nutrition label") answers consistent with the policy.
+- [ ] **Privacy policy URL** (required): publish [PRIVACY_POLICY.md](PRIVACY_POLICY.md) at a public web address. The policy states that the app uses approximate location on the device to derive a ZIP code, sends only the ZIP code to the project API, collects no account data, and uses no third-party analytics.
+- [ ] App Privacy ("nutrition label") answers consistent with the policy: Data collected = **Coarse Location** (the ZIP code), purpose **App Functionality**, **not linked** to the user's identity, **not used for tracking**; no other data types. Policy text: [PRIVACY_POLICY.md](PRIVACY_POLICY.md).
 - [ ] Support URL and contact email.
 - [ ] Description and screenshots that describe the app as a summary of EPA compliance records, not a water test or safety guarantee. Review guideline 1.4 (physical harm) makes accurate framing important for any app that informs health decisions.
 - [ ] Age rating questionnaire; category (for example, Utilities or Health & Fitness).
