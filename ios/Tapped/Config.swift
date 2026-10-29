@@ -6,7 +6,7 @@ enum Config {
         #if DEBUG
         return URL(string: "http://localhost:8787")!   // `npm run dev` in backend/
         #else
-        return URL(string: "https://tapped-api.example.workers.dev")!  // TODO: real deployed URL
+        return URL(string: "https://tapped-api.tapped-api.workers.dev")!
         #endif
     }()
 }

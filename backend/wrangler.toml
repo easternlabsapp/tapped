@@ -2,11 +2,9 @@ name = "tapped-api"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
-# Create with: npx wrangler kv namespace create STATUS_CACHE
-# then paste the returned id below.
 [[kv_namespaces]]
 binding = "STATUS_CACHE"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "d60d2fc7e4934422aeea5ce08b031a88"
 
 [vars]
 # Underlying data changes quarterly, so cache for days. Default 3 days.
