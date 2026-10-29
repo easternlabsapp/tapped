@@ -30,6 +30,7 @@ struct AboutView: View {
                         }
                         section("Your privacy") {
                             para("Your location is converted to a ZIP code on your device. Only the five-digit ZIP code is sent to Tapped's server; your coordinates are never sent to it.")
+                            link("Privacy policy", Config.privacyPolicyURL.absoluteString)
                         }
                         Text("Version \(version)")
                             .font(Theme.rounded(.footnote))
