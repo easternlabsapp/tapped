@@ -26,11 +26,14 @@ struct ContentView: View {
                             Task { await model.locate() }
                         }
 
+                        // The caption hangs below the orb at zero layout height, so the orb itself
+                        // (not orb + caption) is what's centred between the title and the ZIP field.
                         if case .idle = model.phase {
                             Text("Tap to find the water around you")
                                 .font(Theme.rounded(.subheadline, weight: .medium))
                                 .foregroundStyle(Theme.secondaryText)
                                 .padding(.top, 44)
+                                .frame(height: 0, alignment: .top)
                         }
 
                         if compact {
@@ -39,7 +42,8 @@ struct ContentView: View {
                                 .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
 
-                        Spacer(minLength: 24)
+                        // Same construction as the top spacer so the two share free space equally when idle.
+                        Spacer(minLength: 24).frame(maxHeight: compact ? nil : .infinity)
 
                         ZipField(text: $model.zipInput, focused: $zipFocused, disabled: model.isBusy) {
                             zipFocused = false

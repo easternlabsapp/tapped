@@ -33,6 +33,7 @@ struct OrbButton: View {
         return Circle()
             .fill(RadialGradient(colors: colors, center: .init(x: 0.35, y: 0.28), startRadius: 4, endRadius: diameter * 0.8))
             .frame(width: diameter, height: diameter)
+            .overlay { if showsRipples { WaterFill(animated: !reduceMotion).clipShape(Circle()) } }
             .overlay(Circle().strokeBorder(.white.opacity(0.28), lineWidth: 1.5))
             .shadow(color: colors.last!.opacity(0.55), radius: diameter * 0.16, y: diameter * 0.05)
             .overlay(content)
@@ -47,12 +48,14 @@ struct OrbButton: View {
                 Text("Locate").font(.system(size: diameter * 0.17, weight: .heavy, design: .rounded))
             }
             .foregroundStyle(.white)
+            .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
         case .working(let label):
             VStack(spacing: 10) {
                 ProgressView().tint(.white).scaleEffect(1.2)
                 Text(label).font(.system(size: diameter * 0.075, weight: .semibold, design: .rounded))
             }
             .foregroundStyle(.white)
+            .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
         case .status(let status):
             Image(systemName: status.symbol)
                 .font(.system(size: diameter * 0.42, weight: .bold))
