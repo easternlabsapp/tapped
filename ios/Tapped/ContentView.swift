@@ -11,6 +11,7 @@ struct ContentView: View {
         ZStack {
             WaterBackground()
             GeometryReader { geo in
+                ScrollViewReader { scroller in
                 ScrollView {
                     VStack(spacing: 0) {
                         Text("Tapped")
@@ -19,16 +20,16 @@ struct ContentView: View {
                             .padding(.top, 12)
 
                         // Idle: centre the orb. Result/message: pin it near the top.
-                        Spacer(minLength: compact ? 24 : 16).frame(maxHeight: compact ? 24 : .infinity)
+                        Spacer(minLength: orbSmall ? 24 : 16).frame(maxHeight: orbSmall ? 24 : .infinity)
 
-                        OrbButton(appearance: orbAppearance, diameter: compact ? 130 : 230) {
+                        OrbButton(appearance: orbAppearance, diameter: orbSmall ? 130 : 230) {
                             zipFocused = false
                             Task { await model.locate() }
                         }
 
                         // The caption hangs below the orb at zero layout height, so the orb itself
                         // (not orb + caption) is what's centred between the title and the ZIP field.
-                        if case .idle = model.phase {
+                        if case .idle = model.phase, !zipFocused {
                             Text("Tap to find the water around you")
                                 .font(Theme.rounded(.subheadline, weight: .medium))
                                 .foregroundStyle(Theme.secondaryText)
@@ -49,6 +50,7 @@ struct ContentView: View {
                             zipFocused = false
                             Task { await model.lookUpTypedZip() }
                         }
+                        .id("zipField")
                     }
                     .padding(.horizontal, 20)
                     .padding(.bottom, 16)
@@ -57,6 +59,15 @@ struct ContentView: View {
                     .onTapGesture { zipFocused = false }
                 }
                 .scrollDismissesKeyboard(.interactively)
+                .onChange(of: zipFocused) { _, focused in
+                    // Once the keyboard is up, keep the field (and what's above it) in view.
+                    guard focused else { return }
+                    Task {
+                        try? await Task.sleep(for: .milliseconds(250))
+                        withAnimation(.easeOut(duration: 0.25)) { scroller.scrollTo("zipField", anchor: .bottom) }
+                    }
+                }
+                }
             }
         }
         .overlay(alignment: .topTrailing) {
@@ -72,6 +83,7 @@ struct ContentView: View {
         .sheet(isPresented: $showingAbout) { AboutView() }
         .preferredColorScheme(.dark)
         .animation(.spring(duration: 0.6, bounce: 0.2), value: compact)
+        .animation(.easeOut(duration: 0.25), value: zipFocused)
         .onChange(of: model.phase) { _, phase in
             guard case .result(let response) = phase else { return }
             UINotificationFeedbackGenerator().notificationOccurred(response.status == .green ? .success : .warning)
@@ -85,6 +97,9 @@ struct ContentView: View {
         default: true
         }
     }
+
+    /// The orb also shrinks while typing, so it and the field both stay above the keyboard.
+    private var orbSmall: Bool { compact || zipFocused }
 
     private var orbAppearance: OrbButton.Appearance {
         switch model.phase {
@@ -154,6 +169,7 @@ private struct Panel: View {
                 EmptyView()
             }
         }
+        .fixedSize(horizontal: false, vertical: true)   // never truncate: grow to fit the text
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
         .background(.ultraThinMaterial.opacity(0.7), in: RoundedRectangle(cornerRadius: Theme.cardRadius))
