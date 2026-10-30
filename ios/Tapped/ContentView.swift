@@ -30,7 +30,7 @@ struct ContentView: View {
                         // The caption hangs below the orb at zero layout height, so the orb itself
                         // (not orb + caption) is what's centred between the title and the ZIP field.
                         if case .idle = model.phase, !zipFocused {
-                            Text("Tap to find the water around you")
+                            Text("Tap to see the water records around you")
                                 .font(Theme.rounded(.subheadline, weight: .medium))
                                 .foregroundStyle(Theme.secondaryText)
                                 .padding(.top, 44)

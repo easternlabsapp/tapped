@@ -43,16 +43,16 @@ struct OrbButton: View {
     @ViewBuilder private var content: some View {
         switch appearance {
         case .idle:
-            VStack(spacing: 8) {
-                Image(systemName: "location.fill").font(.system(size: diameter * 0.2, weight: .semibold))
-                Text("Locate").font(.system(size: diameter * 0.17, weight: .heavy, design: .rounded))
+            VStack(spacing: diameter * 0.06) {
+                Image(systemName: "location").font(.system(size: diameter * 0.17, weight: .light))
+                Text("LOCATE").font(.system(size: diameter * 0.075, weight: .medium)).tracking(diameter * 0.018)
             }
             .foregroundStyle(.white)
             .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
         case .working(let label):
             VStack(spacing: 10) {
                 ProgressView().tint(.white).scaleEffect(1.2)
-                Text(label).font(.system(size: diameter * 0.075, weight: .semibold, design: .rounded))
+                Text(label).font(.system(size: diameter * 0.075, weight: .medium)).tracking(diameter * 0.006)
             }
             .foregroundStyle(.white)
             .shadow(color: .black.opacity(0.25), radius: 3, y: 1)
