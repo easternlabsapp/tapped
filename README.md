@@ -11,6 +11,7 @@ The app is a thin SwiftUI client. All data processing runs in a serverless API (
 - One-tap location lookup: approximate location is resolved to a ZIP code on the device. Only the five-digit ZIP code is sent to the API; coordinates never leave the device.
 - Manual ZIP entry for denied location permission, trip planning, and geocoding failures.
 - Place name display (neighborhood, city, state) resolved on the device.
+- Saved locations: star a lookup to keep it in a list on the device for one-tap re-checks.
 - Transparent source attribution: each water system links to its public EPA-derived record.
 - Animated water inside the Locate orb that follows device tilt (CoreMotion gravity, processed on the device; no permission required).
 - Explicit handling of permission-denied, location-unavailable, non-US, loading, and error states.

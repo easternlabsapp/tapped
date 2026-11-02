@@ -17,6 +17,8 @@ final class LookupViewModel {
 
     private(set) var phase: Phase = .idle
     private(set) var placeName: String?
+    /// The ZIP code the current result is for.
+    private(set) var resultZip: String?
     var zipInput = ""
 
     private let locator: ZipLocating
@@ -77,6 +79,7 @@ final class LookupViewModel {
             let name = await place
             guard mine == generation else { return }
             placeName = name
+            resultZip = zip
             phase = .result(response)
         } catch StatusError.invalidZip {
             guard mine == generation else { return }

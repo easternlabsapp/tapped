@@ -14,6 +14,8 @@ Tapped shows a summary of US drinking-water compliance records for the area you 
 
 **Technical request data.** Like any internet service, the Tapped service runs on Cloudflare's network. Cloudflare, as our hosting provider, processes standard network data such as your IP address and request details in order to deliver the service and protect it from abuse, under Cloudflare's own privacy policy. Tapped does not use this data to identify you and does not store it in its own database.
 
+**Saved locations.** If you save a location with the star button, its ZIP code and place name are stored on your device only. They are not sent to Tapped or anyone else, and you can remove them at any time from the saved-locations list.
+
 **Cached results.** To reduce load, results for a ZIP code are cached for up to three days. Cached results contain public water-record information only and no information about you.
 
 ## Information the app does not collect

@@ -6,6 +6,8 @@ struct ContentView: View {
         locator: CoreLocationZipLocator(), service: APIStatusService(), places: GeocoderPlaceResolver())
     @FocusState private var zipFocused: Bool
     @State private var showingAbout = false
+    @State private var showingFavorites = false
+    @State private var favorites = FavoritesStore()
 
     var body: some View {
         ZStack {
@@ -22,7 +24,7 @@ struct ContentView: View {
                         // Idle: centre the orb. Result/message: pin it near the top.
                         Spacer(minLength: orbSmall ? 24 : 16).frame(maxHeight: orbSmall ? 24 : .infinity)
 
-                        OrbButton(appearance: orbAppearance, diameter: orbSmall ? 130 : 230) {
+                        OrbButton(appearance: orbAppearance, diameter: orbSmall ? 150 : 230) {
                             zipFocused = false
                             Task { await model.locate() }
                         }
@@ -38,7 +40,10 @@ struct ContentView: View {
                         }
 
                         if compact {
-                            Panel(phase: model.phase, placeName: model.placeName)
+                            Panel(
+                                phase: model.phase, placeName: model.placeName, zip: model.resultZip,
+                                isFavorite: model.resultZip.map(favorites.contains(zip:)) ?? false,
+                                onToggleFavorite: toggleFavorite)
                                 .padding(.top, 28)
                                 .transition(.opacity.combined(with: .move(edge: .bottom)))
                         }
@@ -80,7 +85,24 @@ struct ContentView: View {
             .padding(.trailing, 8)
             .accessibilityLabel("About and data sources")
         }
+        .overlay(alignment: .topLeading) {
+            Button { showingFavorites = true } label: {
+                Image(systemName: "star")
+                    .font(.system(size: 22, weight: .regular))
+                    .foregroundStyle(Theme.secondaryText)
+                    .frame(width: 44, height: 44)
+            }
+            .padding(.leading, 8)
+            .accessibilityLabel("Saved locations")
+        }
         .sheet(isPresented: $showingAbout) { AboutView() }
+        .sheet(isPresented: $showingFavorites) {
+            FavoritesView(store: favorites) { favorite in
+                zipFocused = false
+                model.zipInput = favorite.zip
+                Task { await model.lookUpTypedZip() }
+            }
+        }
         .preferredColorScheme(.dark)
         .animation(.spring(duration: 0.6, bounce: 0.2), value: compact)
         .animation(.easeOut(duration: 0.25), value: zipFocused)
@@ -88,6 +110,12 @@ struct ContentView: View {
             guard case .result(let response) = phase else { return }
             UINotificationFeedbackGenerator().notificationOccurred(response.status == .green ? .success : .warning)
         }
+    }
+
+    private func toggleFavorite() {
+        guard let zip = model.resultZip else { return }
+        favorites.toggle(zip: zip, name: model.placeName)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 
     /// The orb is big until there's something to show underneath it.
@@ -148,11 +176,17 @@ private struct ZipField: View {
 private struct Panel: View {
     let phase: LookupViewModel.Phase
     let placeName: String?
+    let zip: String?
+    let isFavorite: Bool
+    let onToggleFavorite: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             switch phase {
-            case .result(let response): ResultContent(response: response, placeName: placeName)
+            case .result(let response):
+                ResultContent(
+                    response: response, placeName: placeName, zip: zip,
+                    isFavorite: isFavorite, onToggleFavorite: onToggleFavorite)
             case .permissionDenied:
                 Message("Location access is off. Enter a ZIP code below, or allow location in Settings.")
                 Button("Open Settings") {
@@ -181,25 +215,42 @@ private struct Message: View {
     let text: String
     init(_ text: String) { self.text = text }
     var body: some View {
-        Text(text).font(Theme.rounded(.body, weight: .medium)).foregroundStyle(.white)
+        Text(text).font(Theme.rounded(.title3, weight: .medium)).foregroundStyle(.white)
     }
 }
 
 private struct ResultContent: View {
     let response: StatusResponse
     let placeName: String?
+    let zip: String?
+    let isFavorite: Bool
+    let onToggleFavorite: () -> Void
 
     var body: some View {
-        if let placeName {
-            Text(placeName).font(Theme.rounded(.title2, weight: .bold)).foregroundStyle(.white)
+        if placeName != nil || zip != nil {
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text(placeName ?? "ZIP \(zip ?? "")").font(Theme.rounded(.title, weight: .bold)).foregroundStyle(.white)
+                Spacer(minLength: 0)
+                if zip != nil {
+                    Button(action: onToggleFavorite) {
+                        Image(systemName: isFavorite ? "star.fill" : "star")
+                            .font(.system(size: 26, weight: .regular))
+                            .foregroundStyle(isFavorite ? Theme.aqua : Theme.secondaryText)
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(isFavorite ? "Remove from saved locations" : "Save this location")
+                }
+            }
         }
         if let note = response.note {
-            Text(note).font(Theme.rounded(.callout, weight: .medium)).foregroundStyle(Theme.note)
+            Text(note).font(Theme.rounded(.body, weight: .medium)).foregroundStyle(Theme.note)
         }
-        Text(response.summary).font(Theme.rounded(.body, weight: .medium)).foregroundStyle(.white)
+        Text(response.summary).font(Theme.rounded(.title3, weight: .medium)).foregroundStyle(.white)
         if !response.systems.isEmpty { SystemList(systems: response.systems) }
         if let disclaimer = response.disclaimer {
-            Text(disclaimer).font(Theme.rounded(.caption)).foregroundStyle(Theme.secondaryText)
+            Text(disclaimer).font(Theme.rounded(.footnote)).foregroundStyle(Theme.secondaryText)
         }
     }
 }
@@ -212,7 +263,7 @@ private struct SystemList: View {
         VStack(alignment: .leading, spacing: 12) {
             Divider().overlay(.white.opacity(0.2))
             Text(systems.count > 1 ? "Water systems" : "Water system")
-                .font(Theme.rounded(.headline, weight: .bold)).foregroundStyle(.white)
+                .font(Theme.rounded(.title3, weight: .bold)).foregroundStyle(.white)
             ForEach(systems, id: \.pwsid) { system in
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: system.status.symbol)
@@ -222,12 +273,12 @@ private struct SystemList: View {
                         .background(system.status.color, in: Circle())
                         .padding(.top, 1)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(system.name).font(Theme.rounded(.body, weight: .semibold)).foregroundStyle(.white)
+                        Text(system.name).font(Theme.rounded(.title3, weight: .semibold)).foregroundStyle(.white)
                         Text("Serves about \(system.populationServed.formatted()) people")
-                            .font(Theme.rounded(.caption)).foregroundStyle(Theme.secondaryText)
+                            .font(Theme.rounded(.subheadline)).foregroundStyle(Theme.secondaryText)
                         if let link = system.sourceUrl.flatMap(URL.init(string:)) {
                             Link("View EPA record at WaterViolations.org", destination: link)
-                                .font(Theme.rounded(.caption, weight: .semibold)).tint(Theme.aqua)
+                                .font(Theme.rounded(.subheadline, weight: .semibold)).tint(Theme.aqua)
                         }
                     }
                 }
