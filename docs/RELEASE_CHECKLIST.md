@@ -28,8 +28,8 @@ Items required or strongly advised before submitting Tapped for public distribut
 - [ ] Unique app name confirmed available (the working name is "Tapped").
 - [ ] **Privacy policy URL** (required): publish [PRIVACY_POLICY.md](PRIVACY_POLICY.md) at a public web address. The policy states that the app uses approximate location on the device to derive a ZIP code, sends only the ZIP code to the project API, collects no account data, and uses no third-party analytics.
 - [ ] App Privacy ("nutrition label") answers consistent with the policy: Data collected = **Coarse Location** (the ZIP code), purpose **App Functionality**, **not linked** to the user's identity, **not used for tracking**; no other data types. Policy text: [PRIVACY_POLICY.md](PRIVACY_POLICY.md).
-- [ ] Support URL and contact email.
-- [ ] Description and screenshots that describe the app as a summary of EPA compliance records, not a water test or safety guarantee. Review guideline 1.4 (physical harm) makes accurate framing important for any app that informs health decisions.
+- [x] Support URL (https://easternlabs.app/tapped) and contact email (support@easternlabs.app).
+- [ ] Description and screenshots (copy drafted in [APP_STORE_LISTING.md](APP_STORE_LISTING.md); screenshots pending) that describe the app as a summary of EPA compliance records, not a water test or safety guarantee. Review guideline 1.4 (physical harm) makes accurate framing important for any app that informs health decisions.
 - [ ] Age rating questionnaire; category (for example, Utilities or Health & Fitness).
 
 ## Courtesy and compliance
