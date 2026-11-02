@@ -38,6 +38,13 @@ describe("summaries", () => {
     expect(t).toContain("since Feb 2017");
     expect(t).toContain("generally matter more to residents than to short visits");
   });
+  it("old open urgent says it is not shown to be active, and never reads as an alarm", () => {
+    const t = text(facts({ health: [hv({ open: true, cls: "t", date: "2017-12-18" })] }));
+    expect(t).toContain("involving a water-treatment failure");
+    expect(t).toContain("since Dec 2017");
+    expect(t).toContain("do not show whether it is still active");
+    expect(t).not.toContain("before drinking");
+  });
   it("paperwork pattern", () => {
     expect(text(facts({ openPaperwork: 1 }))).toContain("some testing may not have been verified");
   });

@@ -24,8 +24,27 @@ describe("scoreSystem: red", () => {
     expect(r).toMatchObject({ status: "red", reason: "open_urgent", detail: { cls: null } });
   });
   it("urgent beats a long-term open violation on the same system", () => {
-    const r = scoreSystem(facts({ health: [hv({ open: true, cls: "g" }), hv({ open: true, cls: "b" })] }), ANCHOR);
+    const r = scoreSystem(facts({ health: [hv({ open: true, cls: "g" }), hv({ open: true, cls: "b", date: "2025-03-01" })] }), ANCHOR);
     expect(r.status).toBe("red");
+  });
+});
+
+describe("scoreSystem: old open urgent violations", () => {
+  it("an open urgent violation older than 12 months is yellow, not red (the record may be stale)", () => {
+    const r = scoreSystem(facts({ health: [hv({ open: true, cls: "t", date: "2017-12-18" })] }), ANCHOR);
+    expect(r).toMatchObject({ status: "yellow", reason: "open_old_urgent", detail: { cls: "t", date: "2017-12-18" } });
+  });
+  it("12-month boundary for open urgent violations is inclusive", () => {
+    expect(scoreSystem(facts({ health: [hv({ open: true, cls: "b", date: "2024-12-31" })] }), ANCHOR).status).toBe("red");
+    expect(scoreSystem(facts({ health: [hv({ open: true, cls: "b", date: "2024-12-30" })] }), ANCHOR).status).toBe("yellow");
+  });
+  it("a fresh open urgent violation still wins over an old one", () => {
+    const r = scoreSystem(facts({ health: [hv({ open: true, cls: "t", date: "2017-12-18" }), hv({ open: true, cls: "b", date: "2025-09-01" })] }), ANCHOR);
+    expect(r).toMatchObject({ status: "red", reason: "open_urgent", detail: { cls: "b", date: "2025-09-01" } });
+  });
+  it("an old open violation of unknown type is yellow; one with no date is red", () => {
+    expect(scoreSystem(facts({ health: [hv({ open: true, cls: null, date: "2018-01-01" })] }), ANCHOR).status).toBe("yellow");
+    expect(scoreSystem(facts({ health: [hv({ open: true, cls: null, date: null })] }), ANCHOR).status).toBe("red");
   });
 });
 
@@ -81,7 +100,7 @@ describe("worst", () => {
   it("picks red over yellow over green", () => {
     const g = scoreSystem(facts(), ANCHOR);
     const y = scoreSystem(facts({ openPaperwork: 1 }), ANCHOR);
-    const r = scoreSystem(facts({ health: [hv({ open: true, cls: "b" })] }), ANCHOR);
+    const r = scoreSystem(facts({ health: [hv({ open: true, cls: "b", date: "2025-03-01" })] }), ANCHOR);
     expect(worst([g, y])?.status).toBe("yellow");
     expect(worst([y, r, g])?.status).toBe("red");
     expect(worst([g, g])?.status).toBe("green");

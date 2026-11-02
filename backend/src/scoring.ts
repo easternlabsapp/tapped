@@ -7,8 +7,11 @@
 // contain nothing and every system would look clean.
 //
 //   red     an OPEN health-based violation of an urgent type (bacteria, nitrate, treatment
-//           failure), or of unknown type
-//   yellow  an open long-term-type health-based violation; any health-based violation that
+//           failure), or of unknown type, that began within `urgentOpenWindowMonths`. An older
+//           open record cannot be shown to still be active (the source often never closes
+//           old entries), so it is yellow, not red.
+//   yellow  an open long-term-type health-based violation; an open urgent-type violation
+//           older than the window; any health-based violation that
 //           began in the last `healthWindowMonths`; an open monitoring/reporting violation,
 //           or `paperworkPatternCount`+ of them in the last `paperworkWindowMonths`
 //   green   none of the above (older history is mentioned in the summary, color unchanged)
@@ -17,11 +20,13 @@ import type { Status } from "./contract";
 import type { SystemFacts, SystemSummary, ViolationClass } from "./adapters/types";
 import { shiftMonths } from "./dates";
 
-export const SCORING_VERSION = 6; // bump to invalidate cached results when rules change
+export const SCORING_VERSION = 7; // bump to invalidate cached results when rules change
 
 export const SCORING_CONFIG = {
   /** A health-based violation that began this recently makes the result yellow, even if resolved. */
   healthWindowMonths: 12,
+  /** An open urgent-type violation only makes the result red if it began this recently. */
+  urgentOpenWindowMonths: 12,
   /** Older health-based violations (up to this many years) are only mentioned, not scored. */
   historyYears: 5,
   /** This many monitoring/reporting violations in the window make the result yellow. */
@@ -54,7 +59,7 @@ export const SCORING_CONFIG = {
   cityMaxSystems: 3,
 };
 
-export type Reason = "open_urgent" | "open_longterm" | "recent_health" | "paperwork_pattern" | "clean";
+export type Reason = "open_urgent" | "open_old_urgent" | "open_longterm" | "recent_health" | "paperwork_pattern" | "clean";
 
 export interface Scored {
   status: Exclude<Status, "unknown">;
@@ -103,12 +108,26 @@ export function scoreSystem(facts: SystemFacts | null, anchor: string): Scored {
 
   const open = facts.health.filter((h) => h.open);
   const urgent = open.filter((h) => h.cls !== "g"); // unknown type counts as urgent: err on the side of caution
-  if (urgent.length > 0) {
-    const known = urgent.find((h) => h.cls !== null);
+  const urgentStart = shiftMonths(anchor, -SCORING_CONFIG.urgentOpenWindowMonths);
+  // A missing date counts as recent: don't silently drop a violation.
+  const freshUrgent = urgent.filter((h) => h.date === null || h.date >= urgentStart);
+  if (freshUrgent.length > 0) {
+    const known = freshUrgent.find((h) => h.cls !== null);
     return {
       status: "red",
       reason: "open_urgent",
-      detail: { cls: known?.cls ?? null, date: earliest(urgent.map((h) => h.date)) },
+      detail: { cls: known?.cls ?? null, date: earliest(freshUrgent.map((h) => h.date)) },
+    };
+  }
+
+  // Urgent-type but older than the window: still on record as open, but not shown to be active.
+  const oldUrgent = urgent.filter((h) => !freshUrgent.includes(h));
+  if (oldUrgent.length > 0) {
+    const known = oldUrgent.find((h) => h.cls !== null);
+    return {
+      status: "yellow",
+      reason: "open_old_urgent",
+      detail: { cls: known?.cls ?? null, date: earliest(oldUrgent.map((h) => h.date)) },
     };
   }
 

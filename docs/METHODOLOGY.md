@@ -27,8 +27,8 @@ All windows are measured backward from the **data end date** (the "anchor"), nev
 
 | Status | Condition |
 |---|---|
-| **Red** | An open health-based violation of an urgent type, or of unknown type |
-| **Yellow** | An open health-based violation of a long-term type; or a health-based violation that began within 12 months of the anchor (open or resolved); or an open monitoring/reporting violation; or three or more monitoring/reporting violations beginning within 12 months of the anchor |
+| **Red** | An open health-based violation of an urgent type, or of unknown type, that began within 12 months of the anchor |
+| **Yellow** | An open health-based violation of a long-term type; or an open urgent-type violation that began more than 12 months before the anchor; or a health-based violation that began within 12 months of the anchor (open or resolved); or an open monitoring/reporting violation; or three or more monitoring/reporting violations beginning within 12 months of the anchor |
 | **Green** | None of the above |
 | **Unknown** | No system found |
 
@@ -46,6 +46,8 @@ Health-based violations are classified so that conditions relevant to a short st
 | All other | including arsenic, disinfection byproducts, radionuclides, fluoride, lead and copper rule items, and any unclassified code | Long-term |
 
 **Rationale.** Bacterial contamination, nitrate (a risk to infants and during pregnancy), and treatment failures can matter within days. Most other health-based limits address exposure accumulated over years, which a short visit changes little. An open long-term violation therefore yields yellow rather than red, and the summary says so. When the violation type cannot be determined (the live API path does not report it), an open violation is treated as urgent.
+
+**Old open urgent violations.** The source frequently leaves old entries open without closing them. A red result tells a traveler to avoid drinking the water, so it is reserved for an open urgent violation that began within 12 months of the anchor, when it is reasonable to treat it as active. An urgent-type violation that is still marked open but began earlier is reported as yellow, and the summary states the start date and that the records do not show whether it is still active. Example: Portland, Oregon has had an open "Failure to Filter" treatment-technique entry since December 2017. A violation with no recorded start date is treated as recent.
 
 **Open violations.** A violation is open when its compliance status is `O`. This was verified against the source API's own count of active health-based violations for a sample of 14 systems (14 of 14 matched).
 

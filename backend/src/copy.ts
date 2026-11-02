@@ -51,6 +51,12 @@ export function summarize(args: {
       core = `An open health-based violation${what} has been on record${since} ${asOf}. Check with the local water utility before drinking.`;
       break;
     }
+    case "open_old_urgent": {
+      const cls = s.detail.cls;
+      const what = cls && cls !== "g" ? ` involving ${URGENT_LABEL[cls]}` : "";
+      core = `A health-based violation${what} has been on record as open${since} ${asOf}. It is more than ${months} months old, and the records do not show whether it is still active. Check with the local water utility.`;
+      break;
+    }
     default:
       core = `No water system records found for this ZIP code ${asOf}.`;
   }
