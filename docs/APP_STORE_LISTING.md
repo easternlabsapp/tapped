@@ -103,12 +103,13 @@ The app summarizes public EPA drinking-water compliance records. It does not per
 First release.
 ```
 
-## Screenshot plan
+## Screenshots
 
-Capture on a 6.9-inch iPhone (iPhone 17 Pro Max) and one 6.5-inch size if requested by App Store Connect:
+Captured from an iPhone 17 Pro Max simulator (1320 x 2868 px, the 6.9-inch size) running a Release build against the live API, with a clean 9:41 status bar. Files are in [design/screenshots](../design/screenshots):
 
-1. Idle screen: the Locate orb ("Tap to see the water records around you").
-2. A green result with the summary and water system.
-3. A yellow result, showing that Tapped reports reasons, not just colors.
-4. A typed ZIP code lookup with the keyboard dismissed.
-5. The About screen (data sources and privacy).
+1. `01-idle.png`: the Locate orb.
+2. `02-green.png`: a green result (Philadelphia, 19103).
+3. `03-yellow.png`: a yellow result with its explanation (Chicago, 60614).
+4. `04-about.png`: data sources and privacy.
+
+Results reflect the live data at the time of capture. Re-capture before submission if the data refresh or scoring changes.
